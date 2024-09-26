@@ -1,0 +1,23 @@
+services:
+  simple_rtsp:
+    container_name: gpu_rtsp
+    image: test_media:latest
+    ports:
+      - "8554:8554"  # Mapping the RTSP port to the host
+    networks:
+      - rtsp  # Ensuring it uses the custom RTSP network
+    restart: always  # Automatically restart the container on failure
+    command: ["/mediamtx/mediamtx"]
+    volumes:
+      - ./mediamtx.yml:/workspace/mediamtx.yml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    environment:
+      - MTX_PROTOCOLS=tcp  # Configuring the RTSP server to use TCP (more reliable for streaming)
+
+networks:
+  rtsp:
+    external: true
